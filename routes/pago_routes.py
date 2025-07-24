@@ -1,30 +1,26 @@
 from flask import Blueprint, request, jsonify, abort
-from models import db, Pago
+from services.pago_service import (
+    crear_pago,
+    obtener_pago_por_id,
+    obtener_todos_pagos,
+    actualizar_pago,
+    eliminar_pago
+)
 
 pago_bp = Blueprint('pago_bp', __name__)
 
 @pago_bp.route('/pagos', methods=['POST'])
-def create_pago():
+def create_pago_route():
     data = request.get_json()
     try:
-        nuevo_pago = Pago(
-            apoderado_id=data['apoderado_id'],
-            contrato_id=data['contrato_id'],
-            monto=data['monto'],
-            completado=data['completado'],
-            metodo_pago=data.get('metodo_pago')
-        )
-        db.session.add(nuevo_pago)
-        db.session.commit()
-        return jsonify({'mensaje': 'Pago creado exitosamente'}), 201
+        nuevo = crear_pago(data)
+        return jsonify({'mensaje': 'Pago creado exitosamente', 'id': nuevo.id}), 201
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-
 @pago_bp.route('/pagos/<int:id>', methods=['GET'])
-def get_pago(id):
-    pago = Pago.query.get(id)
+def get_pago_route(id):
+    pago = obtener_pago_por_id(id)
     if not pago:
         abort(404)
     return jsonify({
@@ -37,47 +33,38 @@ def get_pago(id):
         'metodo_pago': pago.metodo_pago
     })
 
-
 @pago_bp.route('/pagos', methods=['GET'])
-def get_all_pagos():
-    pagos = Pago.query.all()
+def get_all_pagos_route():
+    pagos = obtener_todos_pagos()
     return jsonify([{
-        'id': pago.id,
-        'apoderado_id': pago.apoderado_id,
-        'contrato_id': pago.contrato_id,
-        'monto': pago.monto,
-        'completado': pago.completado,
-        'fecha_pago': pago.fecha_pago.isoformat(),
-        'metodo_pago': pago.metodo_pago
-    } for pago in pagos])
-
+        'id': p.id,
+        'apoderado_id': p.apoderado_id,
+        'contrato_id': p.contrato_id,
+        'monto': p.monto,
+        'completado': p.completado,
+        'fecha_pago': p.fecha_pago.isoformat(),
+        'metodo_pago': p.metodo_pago
+    } for p in pagos])
 
 @pago_bp.route('/pagos/<int:id>', methods=['PUT'])
-def update_pago(id):
-    pago = Pago.query.get(id)
+def update_pago_route(id):
+    pago = obtener_pago_por_id(id)
     if not pago:
         abort(404)
     data = request.get_json()
     try:
-        pago.monto = data['monto']
-        pago.completado = data['completado']
-        pago.metodo_pago = data.get('metodo_pago')
-        db.session.commit()
+        actualizar_pago(pago, data)
         return jsonify({'mensaje': 'Pago actualizado exitosamente'})
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-
 @pago_bp.route('/pagos/<int:id>', methods=['DELETE'])
-def delete_pago(id):
-    pago = Pago.query.get(id)
+def delete_pago_route(id):
+    pago = obtener_pago_por_id(id)
     if not pago:
         abort(404)
     try:
-        db.session.delete(pago)
-        db.session.commit()
+        eliminar_pago(pago)
         return jsonify({'mensaje': 'Pago eliminado exitosamente'})
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 400

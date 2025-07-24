@@ -1,34 +1,28 @@
 from flask import Blueprint, jsonify, request, abort
-from models import db, Apoderado
+from services.apoderado_service import (
+    obtener_todos_apoderados,
+    obtener_apoderado_por_id,
+    crear_apoderado,
+    actualizar_apoderado,
+    eliminar_apoderado
+)
 
 apoderado_bp = Blueprint('apoderado_bp', __name__)
 
-# Crear un nuevo apoderado
+# Crear apoderado
 @apoderado_bp.route('/apoderados', methods=['POST'])
 def create_apoderado():
     data = request.get_json()
     try:
-        nuevo_apoderado = Apoderado(
-            nombre_completo=data['nombre_completo'],
-            rut=data['rut'],
-            correo=data['correo'],
-            password=data['password'],  # Ideal cifrarla en producción
-            direccion=data['direccion'],
-            numero_telefono=data['numero_telefono'],
-            sexo=data.get('sexo'),
-            rol=data.get('rol')
-        )
-        db.session.add(nuevo_apoderado)
-        db.session.commit()
-        return jsonify({'mensaje': 'Apoderado creado exitosamente'}), 201
+        nuevo = crear_apoderado(data)
+        return jsonify({'mensaje': 'Apoderado creado exitosamente', 'id': nuevo.id}), 201
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-# Obtener todos los apoderados
+# Obtener todos
 @apoderado_bp.route('/apoderados', methods=['GET'])
 def get_all_apoderados():
-    apoderados = Apoderado.query.all()
+    apoderados = obtener_todos_apoderados()
     result = []
     for apoderado in apoderados:
         result.append({
@@ -41,12 +35,12 @@ def get_all_apoderados():
             'sexo': apoderado.sexo,
             'rol': apoderado.rol
         })
-    return jsonify({"apoderados": result})
+    return jsonify(result)
 
-# Obtener uno por ID
+# Obtener uno
 @apoderado_bp.route('/apoderados/<int:id>', methods=['GET'])
 def get_apoderado(id):
-    apoderado = Apoderado.query.get(id)
+    apoderado = obtener_apoderado_por_id(id)
     if not apoderado:
         abort(404)
     return jsonify({
@@ -60,38 +54,27 @@ def get_apoderado(id):
         'rol': apoderado.rol
     })
 
-# Actualizar apoderado
+# Actualizar
 @apoderado_bp.route('/apoderados/<int:id>', methods=['PUT'])
 def update_apoderado(id):
-    apoderado = Apoderado.query.get(id)
+    apoderado = obtener_apoderado_por_id(id)
     if not apoderado:
         abort(404)
     data = request.get_json()
     try:
-        apoderado.nombre_completo = data['nombre_completo']
-        apoderado.rut = data['rut']
-        apoderado.correo = data['correo']
-        apoderado.password = data['password']
-        apoderado.direccion = data['direccion']
-        apoderado.numero_telefono = data['numero_telefono']
-        apoderado.sexo = data.get('sexo')
-        apoderado.rol = data.get('rol')
-        db.session.commit()
+        actualizar_apoderado(apoderado, data)
         return jsonify({'mensaje': 'Apoderado actualizado exitosamente'})
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
-# Eliminar apoderado
+# Eliminar
 @apoderado_bp.route('/apoderados/<int:id>', methods=['DELETE'])
 def delete_apoderado(id):
-    apoderado = Apoderado.query.get(id)
+    apoderado = obtener_apoderado_por_id(id)
     if not apoderado:
         abort(404)
     try:
-        db.session.delete(apoderado)
-        db.session.commit()
+        eliminar_apoderado(apoderado)
         return jsonify({'mensaje': 'Apoderado eliminado exitosamente'})
     except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 400
