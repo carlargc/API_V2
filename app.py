@@ -43,13 +43,13 @@ app.register_blueprint(contrato_bp)
 app.register_blueprint(solicitud_bp)
 app.register_blueprint(admin_bp)
 
-@app.before_request
-def debug_session():
-    session['user_id'] = 1  # Asegúrate de que este ID exista como apoderado
-    session['rol'] = 'ROLE_APODERADO'
+#@app.before_request
+#def debug_session():
+#   session['user_id'] = 1  # Asegúrate de que este ID exista como apoderado
+#   session['rol'] = 'ROLE_APODERADO'
 
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+#if __name__ == '__main__':
+ #   with app.app_context():
+ #       db.create_all()
+  #  app.run(debug=True)
