@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, abort
+from services.documento_service import obtener_documentos_por_conductor
 from services.documento_service import (
     crear_documento,
     obtener_documento,
@@ -64,3 +65,25 @@ def delete_documento(id):
         return jsonify({'mensaje': 'Documento eliminado exitosamente'})
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+
+@documento_bp.route('/api/documentos/subir/conductor', methods=['POST'])
+def subir_documento_conductor():
+    data = request.get_json()
+    try:
+        doc = crear_documento(data)
+        return jsonify({'mensaje': 'Documento del conductor subido exitosamente', 'id': doc.id}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+from services.documento_service import obtener_documentos_por_conductor
+
+@documento_bp.route('/api/documentos/conductor/<int:conductor_id>', methods=['GET'])
+def get_documentos_por_conductor(conductor_id):
+    documentos = obtener_documentos_por_conductor(conductor_id)
+    return jsonify([{
+        'id': doc.id,
+        'contenido_documento': doc.contenido_documento.decode('utf-8') if doc.contenido_documento else None,
+        'tipo_documento': doc.tipo_documento,
+        'conductor_id': doc.conductor_id,
+        'asistente_id': doc.asistente_id
+    } for doc in documentos])

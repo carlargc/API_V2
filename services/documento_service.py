@@ -1,5 +1,7 @@
 from datetime import datetime
 from models import Documentos
+ # o desde donde lo tengas definido
+
 from repositories.documento_repository import (
     guardar_documento,
     obtener_documento_por_id,
@@ -29,3 +31,6 @@ def actualizar_documento(documento, data):
 
 def eliminar_documento(documento):
     eliminar_repo(documento)
+
+def obtener_documentos_por_conductor(conductor_id):
+    return Documentos.query.filter_by(conductor_id=conductor_id).all()

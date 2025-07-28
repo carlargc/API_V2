@@ -22,8 +22,7 @@ def asistente_a_dict(asistente):
     }
 
 def obtener_asistente_por_id(id):
-    asistente = get_asistente_by_id(id)
-    return asistente_a_dict(asistente) if asistente else None
+    return Asistente.query.get(id)
 
 def obtener_todos_asistentes():
     asistentes = get_all_asistentes()

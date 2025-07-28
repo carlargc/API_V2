@@ -10,13 +10,21 @@ from services.conductor_service import (
 conductor_bp = Blueprint('conductor_bp', __name__)
 
 @conductor_bp.route('/conductores', methods=['POST'])
-def create_conductor():
+def crear_conductor_route():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Datos requeridos"}), 400
+
     try:
         nuevo = crear_conductor(data)
-        return jsonify({"message": "Conductor creado exitosamente", "id": nuevo.id}), 201
+        return jsonify({
+            "mensaje": "Conductor creado",
+            "id": nuevo.id,
+            "nombre": nuevo.nombre_completo,
+            "correo": nuevo.correo
+        }), 201
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": f"Error al crear conductor: {str(e)}"}), 500
 
 @conductor_bp.route('/conductores', methods=['GET'])
 def get_conductores():

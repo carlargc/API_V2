@@ -1,7 +1,7 @@
 from flask import Flask
 from config import Config
 from models import db
-from routes.alumno_routes import alumno_bp  # Asegúrate de que existe
+from routes.alumno_routes import alumno_bp  
 from routes.conductor_routes import conductor_bp
 from routes.apoderado_routes import apoderado_bp
 from routes.colegio_routes import colegio_bp
@@ -14,7 +14,9 @@ from routes.documentos_routes import documento_bp
 from routes.calificacion_routes import calificacion_bp
 from routes.contrato_routes import contrato_bp
 from routes.solicitud_routes import solicitud_bp
-
+from routes.admin_routes import admin_bp
+from database import db
+from flask import session, jsonify, abort
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -39,6 +41,13 @@ app.register_blueprint(documento_bp)
 app.register_blueprint(calificacion_bp) 
 app.register_blueprint(contrato_bp)
 app.register_blueprint(solicitud_bp)
+app.register_blueprint(admin_bp)
+
+@app.before_request
+def debug_session():
+    session['user_id'] = 1  # Asegúrate de que este ID exista como apoderado
+    session['rol'] = 'ROLE_APODERADO'
+
 
 if __name__ == '__main__':
     with app.app_context():

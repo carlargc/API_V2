@@ -4,6 +4,7 @@ from datetime import datetime
 from models import Alumno
 import repositories.alumno_repository as repo
 
+
 def obtener_todos_alumnos():
     return repo.obtener_todos()
 
@@ -45,3 +46,6 @@ def actualizar_alumno(alumno, data):
 
 def eliminar_alumno(alumno):
     repo.eliminar(alumno)
+
+def obtener_alumnos_por_apoderado(apoderado_id):
+    return Alumno.query.filter_by(apoderado_id=apoderado_id).all()

@@ -1,9 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
+from database import db
 import enum
 from datetime import date
 from datetime import datetime
 
-db = SQLAlchemy()
+
 class Alumno(db.Model):
     __tablename__ = 'alumno'
     
@@ -96,7 +96,6 @@ class Conductor(db.Model):
     rol = db.Column(db.String(50), nullable=True)  # Ejemplo: largo máximo de 50 para roles como 'Admin', 'User', etc.
     # Campo LOB (Large Object Binary) para la imagen
     image = db.Column(db.LargeBinary, nullable=True)
-    # Relación OneToMany con Asistente
     asistentes = db.relationship('Asistente', backref='conductor', cascade='all, delete-orphan', lazy=True)
 
 
@@ -303,6 +302,19 @@ class Sector(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     poblacion = db.Column(db.String(255), nullable=True)
     comuna = db.Column(db.String(255), nullable=True)
+    
+    
+class Admin(db.Model):
+    __tablename__ = 'admin'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombre_completo = db.Column(db.String(100), nullable=False)
+    correo = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
+
+    def __repr__(self):
+        return f'<Admin {self.nombre_completo}>'
+
     
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date

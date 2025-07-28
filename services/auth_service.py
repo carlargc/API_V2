@@ -1,21 +1,25 @@
 from models import db, Apoderado, Conductor
-from werkzeug.security import generate_password_hash, check_password_hash
 from repositories.auth_repository import buscar_apoderado_por_correo, buscar_conductor_por_correo
+import bcrypt
+
+from werkzeug.security import generate_password_hash
 
 def registrar_apoderado(data):
+    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
     nuevo = Apoderado(
         nombre_completo=data['nombre_completo'],
         rut=data['rut'],
         correo=data['correo'],
         direccion=data['direccion'],
-        sexo=data.get('sexo'),
         numero_telefono=data['numero_telefono'],
-        rol="ROLE_APODERADO",
-        password=generate_password_hash(data['password'])
+        sexo=data['sexo'],
+        rol='apoderado',
+        password=hashed_password.decode('utf-8')
     )
     db.session.add(nuevo)
     db.session.commit()
     return nuevo
+
 
 def registrar_conductor(data):
     nuevo = Conductor(
@@ -25,7 +29,7 @@ def registrar_conductor(data):
         numero_telefono=data['numero_telefono'],
         sexo=data.get('sexo'),
         rol="ROLE_CONDUCTOR",
-        password=generate_password_hash(data['password'])
+        password=bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     )
     db.session.add(nuevo)
     db.session.commit()
@@ -39,7 +43,7 @@ def autenticar_usuario(correo, password):
     if not user:
         return None, "Usuario no encontrado", 404
 
-    if not check_password_hash(user.password, password):
+    if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
         return None, "Contraseña incorrecta", 401
 
     if user.rol not in ['ROLE_APODERADO', 'ROLE_CONDUCTOR']:

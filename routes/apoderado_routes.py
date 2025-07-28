@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request, abort
+from flask import session
+from services.alumno_service import obtener_alumnos_por_apoderado
 from services.apoderado_service import (
     obtener_todos_apoderados,
     obtener_apoderado_por_id,
@@ -78,3 +80,38 @@ def delete_apoderado(id):
         return jsonify({'mensaje': 'Apoderado eliminado exitosamente'})
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+@apoderado_bp.route('/apoderado/registrar', methods=['POST'])
+def registrar_apoderado_alias():
+    data = request.get_json()
+    try:
+        nuevo = crear_apoderado(data)
+        return jsonify({'mensaje': 'Apoderado registrado exitosamente', 'id': nuevo.id}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+@apoderado_bp.route('/apoderado/estudiantes', methods=['GET'])
+def ver_estudiantes_apoderado():
+    print("SESSION:", session) 
+    if 'user_id' not in session or session.get('rol') != 'ROLE_APODERADO':
+        abort(403)  # No autorizado
+
+    apoderado_id = session['user_id']
+    alumnos = obtener_alumnos_por_apoderado(apoderado_id)
+
+    result = [{
+        'id': a.id,
+        'nombre_completo': a.nombre_completo,
+        'rut': a.rut,
+        'fecha_nacimiento': a.fecha_nacimiento.isoformat(),
+        'horario_entrada': a.horario_entrada.isoformat(),
+        'horario_salida': a.horario_salida.isoformat(),
+        'curso': a.curso,
+        'direccion_hogar': a.direccion_hogar,
+        'nombre_contacto_emergencia': a.nombre_contacto_emergencia,
+        'contacto_emergencia': a.contacto_emergencia,
+        'colegio_id': a.colegio_id,
+        'apoderado_id': a.apoderado_id,
+        'sector_id': a.sector_id
+    } for a in alumnos]
+
+    return jsonify(result)

@@ -52,3 +52,5 @@ def login():
 def logout():
     session.clear()
     return jsonify({"mensaje": "Cierre de sesión exitoso"}), 200
+
+
