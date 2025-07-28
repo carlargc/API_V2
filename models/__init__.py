@@ -320,19 +320,19 @@ class Precontrato(db.Model):
     __tablename__ = 'precontrato'
 
     id = db.Column(db.BigInteger, primary_key=True)
-    direccion_establecimiento = db.Column(db.String(255))
-    direccion_hogar = db.Column(db.String(255))
-    estado = db.Column(db.String(255))
+    direccion_establecimiento = db.Column(db.String(100))
+    direccion_hogar = db.Column(db.String(100))
+    estado = db.Column(db.String(20))
     fecha_contratacion = db.Column(db.Date)
-    nombre_alumno = db.Column(db.String(255))
-    nombre_apoderado = db.Column(db.String(255))
-    nombre_contacto_emergencia = db.Column(db.String(255))
-    nombre_establecimiento = db.Column(db.String(255))
-    numero_contacto_emergencia = db.Column(db.String(255))
-    periodo = db.Column(db.String(255))
-    precio = db.Column(db.String(255))
-    rut_apoderado = db.Column(db.String(255))
-    tipo_servicio = db.Column(db.String(255))
+    nombre_alumno = db.Column(db.String(100))
+    nombre_apoderado = db.Column(db.String(100))
+    nombre_contacto_emergencia = db.Column(db.String(100))
+    nombre_establecimiento = db.Column(db.String(100))
+    numero_contacto_emergencia = db.Column(db.String(12))
+    periodo = db.Column(db.String(20))
+    precio = db.Column(db.String(10))
+    rut_apoderado = db.Column(db.String(12))
+    tipo_servicio = db.Column(db.String(20))
 
     alumno_id = db.Column(db.BigInteger, db.ForeignKey('alumno.id'))
     apoderado_id = db.Column(db.BigInteger, db.ForeignKey('apoderado.id'))
@@ -346,6 +346,8 @@ class Precontrato(db.Model):
     colegio = db.relationship('Colegio', backref='precontratos')
     conductor = db.relationship('Conductor', backref='precontratos')
     furgon = db.relationship('Furgon', backref='precontratos')
+
+
 
 
     

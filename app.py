@@ -26,7 +26,6 @@ db.init_app(app)
 
 @app.route('/')
 def home():
-    print(app.url_map)
     return "✅ API funcionando correctamente"
 
 # Registrar rutas (Blueprints)
