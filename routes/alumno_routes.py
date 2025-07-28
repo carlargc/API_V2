@@ -51,13 +51,22 @@ def get_alumno(id):
     })
 
 @alumno_bp.route('/alumnos', methods=['POST'])
-def create_alumno_route():
+def crear_alumno_route():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Datos requeridos"}), 400
+
     try:
         nuevo = crear_alumno(data)
-        return jsonify({'mensaje': 'Alumno creado exitosamente', 'id': nuevo.id}), 201
+        return jsonify({
+            "mensaje": "Alumno creado",
+            "id": nuevo.id,
+            "nombre": nuevo.nombre_completo,
+            "rut": nuevo.rut
+        }), 201
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        return jsonify({"error": f"Error al crear alumno: {str(e)}"}), 500
+
 
 @alumno_bp.route('/alumnos/<int:id>', methods=['PUT'])
 def update_alumno(id):

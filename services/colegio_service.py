@@ -4,7 +4,7 @@ def colegio_a_dict(colegio):
     return {
         'id': colegio.id,
         'rbd': colegio.rbd,
-        'nombre_colegio': colegio.nombre_colegio,
+       'nombre': colegio.nombre,
         'direccion': colegio.direccion,
         'contacto': colegio.contacto,
         'sector_id': colegio.sector_id

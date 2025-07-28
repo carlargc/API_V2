@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify, abort
+from services.precontrato_service import obtener_todos_precontratos_service
 from services.solicitud_service import (
     crear_solicitud,
     obtener_solicitud_por_id,
@@ -34,19 +35,19 @@ def get_solicitud_route(id):
         'estado': solicitud.estado
     })
 
-@solicitud_bp.route('/solicitudes', methods=['GET'])
-def get_all_solicitudes_route():
-    solicitudes = obtener_todas_solicitudes()
-    return jsonify([{
-        'id': s.id,
-        'apoderado_id': s.apoderado_id,
-        'conductor_id': s.conductor_id,
-        'furgon_id': s.furgon_id,
-        'aceptada': s.aceptada,
-        'rechazada': s.rechazada,
-        'vencida': s.vencida,
-        'estado': s.estado
-    } for s in solicitudes])
+#@solicitud_bp.route('/solicitudes', methods=['GET'])
+#def get_all_solicitudes_route():
+#    solicitudes = obtener_todas_solicitudes()
+ #   return jsonify([{
+ #       'id': s.id,
+ #       'apoderado_id': s.apoderado_id,
+ #       'conductor_id': s.conductor_id,
+ #       'furgon_id': s.furgon_id,
+  #      'aceptada': s.aceptada,
+#      'rechazada': s.rechazada,
+#      'vencida': s.vencida,
+#       'estado': s.estado
+#   } for s in solicitudes])
 
 @solicitud_bp.route('/solicitudes/<int:id>', methods=['PUT'])
 def update_solicitud_route(id):
@@ -70,3 +71,11 @@ def delete_solicitud_route(id):
         return jsonify({'mensaje': 'Solicitud eliminada exitosamente'})
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+
+
+
+@solicitud_bp.route('/solicitudes', methods=['GET'])
+def get_all_solicitudes_route():
+    solicitudes = obtener_todos_precontratos_service()
+    return jsonify(solicitudes), 200

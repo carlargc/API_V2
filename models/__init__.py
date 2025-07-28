@@ -53,7 +53,7 @@ class Colegio(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     rbd = db.Column(db.String(20), nullable=True)  # Ejemplo: largo máximo de 20 para el RBD
-    nombre_colegio = db.Column(db.String(255), nullable=True)
+    nombre = db.Column(db.String(100),nullable=True)
     direccion = db.Column(db.String(255), nullable=True)
     contacto = db.Column(db.String(15), nullable=True)  # Ejemplo: largo máximo de 15 para el número de contacto
     
@@ -96,8 +96,7 @@ class Conductor(db.Model):
     rol = db.Column(db.String(50), nullable=True)  # Ejemplo: largo máximo de 50 para roles como 'Admin', 'User', etc.
     # Campo LOB (Large Object Binary) para la imagen
     image = db.Column(db.LargeBinary, nullable=True)
-    asistentes = db.relationship('Asistente', backref='conductor', cascade='all, delete-orphan', lazy=True)
-
+    asistentes = db.relationship('Asistente', backref='conductor', cascade='all, delete-orphan', lazy=True)            
 
 class TipoDocumentoEnum(enum.Enum):
     LICENCIA = "LICENCIA"
@@ -314,6 +313,40 @@ class Admin(db.Model):
 
     def __repr__(self):
         return f'<Admin {self.nombre_completo}>'
+
+
+
+class Precontrato(db.Model):
+    __tablename__ = 'precontrato'
+
+    id = db.Column(db.BigInteger, primary_key=True)
+    direccion_establecimiento = db.Column(db.String(255))
+    direccion_hogar = db.Column(db.String(255))
+    estado = db.Column(db.String(255))
+    fecha_contratacion = db.Column(db.Date)
+    nombre_alumno = db.Column(db.String(255))
+    nombre_apoderado = db.Column(db.String(255))
+    nombre_contacto_emergencia = db.Column(db.String(255))
+    nombre_establecimiento = db.Column(db.String(255))
+    numero_contacto_emergencia = db.Column(db.String(255))
+    periodo = db.Column(db.String(255))
+    precio = db.Column(db.String(255))
+    rut_apoderado = db.Column(db.String(255))
+    tipo_servicio = db.Column(db.String(255))
+
+    alumno_id = db.Column(db.BigInteger, db.ForeignKey('alumno.id'))
+    apoderado_id = db.Column(db.BigInteger, db.ForeignKey('apoderado.id'))
+    colegio_id = db.Column(db.BigInteger, db.ForeignKey('colegio.id'))
+    conductor_id = db.Column(db.BigInteger, db.ForeignKey('conductor.id'))
+    furgon_id = db.Column(db.BigInteger, db.ForeignKey('furgon.id'))
+
+    # Relaciones
+    alumno = db.relationship('Alumno', backref='precontratos')
+    apoderado = db.relationship('Apoderado', backref='precontratos')
+    colegio = db.relationship('Colegio', backref='precontratos')
+    conductor = db.relationship('Conductor', backref='precontratos')
+    furgon = db.relationship('Furgon', backref='precontratos')
+
 
     
 from flask_sqlalchemy import SQLAlchemy

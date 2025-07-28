@@ -17,6 +17,7 @@ from routes.solicitud_routes import solicitud_bp
 from routes.admin_routes import admin_bp
 from database import db
 from flask import session, jsonify, abort
+from routes.precontrato_routes import precontrato_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -25,6 +26,7 @@ db.init_app(app)
 
 @app.route('/')
 def home():
+    print(app.url_map)
     return "✅ API funcionando correctamente"
 
 # Registrar rutas (Blueprints)
@@ -42,6 +44,7 @@ app.register_blueprint(calificacion_bp)
 app.register_blueprint(contrato_bp)
 app.register_blueprint(solicitud_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(precontrato_bp)
 
 #@app.before_request
 #def debug_session():

@@ -1,5 +1,6 @@
 from models import db, Solicitud
 
+
 def guardar(solicitud):
     db.session.add(solicitud)
     db.session.commit()

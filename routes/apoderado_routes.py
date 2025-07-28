@@ -11,15 +11,24 @@ from services.apoderado_service import (
 
 apoderado_bp = Blueprint('apoderado_bp', __name__)
 
-# Crear apoderado
+#crea apoderado
 @apoderado_bp.route('/apoderados', methods=['POST'])
-def create_apoderado():
+def crear_apoderado_route():
     data = request.get_json()
+    if not data:
+        return jsonify({"error": "Datos requeridos"}), 400
+
     try:
         nuevo = crear_apoderado(data)
-        return jsonify({'mensaje': 'Apoderado creado exitosamente', 'id': nuevo.id}), 201
+        return jsonify({
+            "mensaje": "Apoderado creado",
+            "id": nuevo.id,
+            "nombre": nuevo.nombre_completo,
+            "correo": nuevo.correo
+        }), 201
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        return jsonify({"error": f"Error al crear apoderado: {str(e)}"}), 500
+
 
 # Obtener todos
 @apoderado_bp.route('/apoderados', methods=['GET'])

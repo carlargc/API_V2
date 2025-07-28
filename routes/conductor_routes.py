@@ -25,6 +25,7 @@ def crear_conductor_route():
         }), 201
     except Exception as e:
         return jsonify({"error": f"Error al crear conductor: {str(e)}"}), 500
+    
 
 @conductor_bp.route('/conductores', methods=['GET'])
 def get_conductores():
